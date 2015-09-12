@@ -40,5 +40,12 @@
         "default_title": "Test Extension"
     },
 
-    "permissions": ["tabs","activeTab","downloads","<all_urls>"]
+    "permissions": [
+      "tabs",
+      "activeTab",
+      "downloads",
+      "<all_urls>",
+      "https://*/*",
+      "http://*/*"
+    ]
 }

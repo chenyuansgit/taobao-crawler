@@ -27,3 +27,4 @@ function JSON2CSV(json) {
   csv = csv.join('\r\n');
   return csv;
 }
+
