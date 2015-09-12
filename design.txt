@@ -1,6 +1,5 @@
-each page send info to background.js
-the last page send EOF to background.js,
-
-(how does background.js generate xls file?)
-
 optimization: add on/off button to auto-fetching, or manually disable it?
+
+optimization: add interface to show iconpage?
+
+optimization: add interface to show current stat?
