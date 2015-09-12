@@ -8,7 +8,6 @@ function IsCurrentLastPage() {
   //
   // in page: 466
   // <span class="page-end"><span>下一页</span></span>
-  // do sth to see whether we're at last page
   return $(".page-end").length != 0;
 }
 
@@ -17,7 +16,6 @@ function IsDistributorDetailPage(url) {
   return regex.test(url);
 }
 
-// Helper method to parse the title tag from the response.
 function getTitle(text) {
   return text.match('<title>(.*)?</title>')[1];
 }
