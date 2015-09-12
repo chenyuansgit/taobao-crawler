@@ -1,0 +1,21 @@
+{
+    "manifest_version": 2,
+    "name":    "working version4",
+    "description": "evil things",
+    "version": "0.0",
+
+    "background": {
+        "persistent": false,
+        "scripts": ["background.js"]
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js":      ["content.js"],
+        "run_at":  "document_end"
+    }],
+    "browser_action": {
+        "default_title": "Test Extension"
+    },
+
+    "permissions": ["tabs","activeTab","<all_urls>"]
+}
