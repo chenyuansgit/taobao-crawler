@@ -1,26 +1,8 @@
-function RemoveLineBreak(str) {
-  return str.replace(/(\r\n|\n|\r)/gm," ");
-}
-
-function DeepTrim(obj) {
-  for (var prop in obj) {
-    var value = obj[prop], type = typeof value;
-    if (value != null && (type == "string" || type == "object") && obj.hasOwnProperty(prop)) {
-      if (type == "object") {
-        DeepTrim(obj[prop]);
-      } else {
-        obj[prop] = obj[prop].trim();
-        obj[prop] = RemoveLineBreak(obj[prop]);
-      }
-    }
-  }
-}
-
 function GoNextPage() {
   $(".page-next")[0].click();
 }
 
-function CheckLastPage() {
+function IsLastPage() {
   // do sth to see whether we're at last page
 }
 
@@ -54,18 +36,14 @@ function main() {
   }
   DeepTrim(json);
 
-  var fields = Object.keys(json[0]);
-  var csv = json.map(function(row){
-    return fields.map(function(fieldName){
-      return '"' + (row[fieldName] || '') + '"';
-    });
-  });
-  csv.unshift(fields); // add header column
-  csv = csv.join('\r\n');
-
-  alert(csv);
-  console.log(csv);
-  //window.open( "data:application/csv;charset=utf-8," + escape(csv));
+  //var csv = JSON2CSV(json);
+  //alert(csv);
+  //console.log(csv);
+  //window.open( "data:application/csv;charset=ansi," + encodeURI(csv));
+  
+  //var csv = JSON2CSV(json);
+  //var blob = new Blob([csv]);
+  // location.href = window.URL.createObjectURL(blob);
 
   // gen message
   var pageNum = $(".page-cur").html();

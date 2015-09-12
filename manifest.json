@@ -6,22 +6,33 @@
 
     "background": {
         "persistent": false,
-        "scripts": ["jquery-1.11.3.min.js", "background.js"]
+        "scripts": [
+          "util.js",
+          "background.js"
+        ]
     },
     "content_scripts": [
       {
         "matches": ["*://login.taobao.com/*"],
-        "js":      ["autofill.js"],
+        "js":      [
+          "autofill.js"
+        ],
         "run_at":  "document_end"
       },
       {
         "matches": ["*://mai.taobao.com/*"],
-        "js":      ["autoredirect.js"],
+        "js":      [
+          "autoredirect.js"
+        ],
         "run_at":  "document_start"
       },
       {
         "matches": ["*://qudao.gongxiao.tmall.com/*"],
-        "js":      ["jquery-1.11.3.min.js", "autopaging.js"],
+        "js":      [
+          "jquery/jquery-1.11.3.min.js",
+          "util.js",
+          "autopaging.js"
+        ],
         "run_at":  "document_end"
       }
     ],
@@ -29,5 +40,5 @@
         "default_title": "Test Extension"
     },
 
-    "permissions": ["tabs","activeTab","<all_urls>"]
+    "permissions": ["tabs","activeTab","downloads","<all_urls>"]
 }
