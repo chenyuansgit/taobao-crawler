@@ -112,6 +112,7 @@ function SendInviteList(json) {
   var message = {
     type : "info", 
     data : json,
+    page : pageNum,
     ack  : ack
   };
 
@@ -191,5 +192,7 @@ function main() {
 
   PageRequestChain(json, items, 0);
 }
+
+window.scrollTo(0,document.body.scrollHeight);  // for better view
 
 main();
