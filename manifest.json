@@ -6,7 +6,7 @@
 
     "background": {
         "persistent": false,
-        "scripts": ["background.js"]
+        "scripts": ["jquery-1.11.3.min.js", "background.js"]
     },
     "content_scripts": [
       {
@@ -21,7 +21,7 @@
       },
       {
         "matches": ["*://qudao.gongxiao.tmall.com/*"],
-        "js":      ["autopaging.js"],
+        "js":      ["jquery-1.11.3.min.js", "autopaging.js"],
         "run_at":  "document_end"
       }
     ],
