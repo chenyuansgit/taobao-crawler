@@ -17,9 +17,9 @@ function DEBUG(msg) {
 }
 
 function ShouldStop() {
-  var pageNum = parseInt($(".page-cur").html(), 10);
-  return pageNum >= 2;
-  //return IsCurrentLastPage();
+  //var pageNum = parseInt($(".page-cur").html(), 10);
+  //return pageNum >= 2;
+  return IsCurrentLastPage();
 }
 
 function GoPrevPage() {
@@ -46,6 +46,11 @@ function IsCurrentLastPage() {
   // in page: 466
   // <span class="page-end"><span>下一页</span></span>
   return $(".page-end").length != 0;
+}
+
+function IsInvitationPage(url) {
+  var regex = /qudao.gongxiao.tmall.com/;
+  return regex.test(url);
 }
 
 function IsDistributorDetailPage(url) {
@@ -186,13 +191,13 @@ function PageRequestChain(json, items, step) {
     DEBUG('url=' + url + ' stat=' + xhr.readyState + ' status=' + xhr.status);
   }
 
-  var delay = 600 + Math.floor(Math.random() * 300);
+  var delay = 200 + Math.floor(Math.random() * 300);
 
   xhr.onload = function() {
     var url = xhr.responseURL;
     var text = xhr.responseText;
     if (IsAuthPage(url)) {
-      console.log("auth required, redirect to: " + url);
+      DEBUG("auth required, redirect to: " + url);
       document.location.href = url;
       return;
     }
@@ -215,17 +220,8 @@ function PageRequestChain(json, items, step) {
   xhr.send();
 }
 
-/*
-// A simple hack so that we won't refresh those pages
-function BeautifyPage() {
-  $("tr.item td a").each(function() {
-    var _href = $(this).attr("href");
-    $(this).attr('href', _href + '&testonly');
-  });
-}
-*/
-
-// Background remembers last page, so it is always safe to close this content page
+// Background remembers last page, so it is always safe to close 
+// this content page
 function DetermineStartPage() {
   var pageNum = parseInt($(".page-cur").html(), 10);
 
@@ -251,18 +247,14 @@ function DetermineStartPage() {
 
 
 function main() {
-
-  var targetRegex = /qudao.gongxiao.tmall.com/;
-  if (!targetRegex.test(document.location.href)) {
+  if (!IsInvitationPage(document.location.href)) {
     DEBUG("will redirect soon...");
     return;
   }
-  
   DEBUG("recording...");
-
+  window.scrollTo(0,document.body.scrollHeight);  // to see pageNo.
   DetermineStartPage();
 }
 
-window.scrollTo(0,document.body.scrollHeight);  // for better view
 
 main();
