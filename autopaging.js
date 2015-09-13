@@ -16,6 +16,11 @@ function IsDistributorDetailPage(url) {
   return regex.test(url);
 }
 
+// example of auth code
+//
+// http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
+// http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
+
 function getTitle(text) {
   return text.match('<title>(.*)?</title>')[1];
 }
@@ -82,21 +87,28 @@ function ExtractInfoFromUserPage(dom) {
   var div = $('.distributor-detail', dom).first();
   var dd = $('dt:contains("其他信息")', div).next();
   var ul = $(dd).children(':first');
-  var wrap = function(elem) {
+  var text_wrap = function(elem) {
     if (elem != null && elem !== undefined) {
       return elem.nodeValue;
     } else {
       return '';
     }
-  }
+  };
+  var url_wrap = function(elem) {
+    if (elem != null && elem !== undefined) {
+      return 'https://' + elem;
+    } else {
+      return '';
+    }
+  };
   var lis = $(ul).children();
   var info = {
-    shop_link   : 'https:' + $(lis[0]).children(':first').next().attr('href'),
-    contact     : wrap($(lis[1]).children()[0].nextSibling),
-    phone_num_1 : wrap($(lis[2]).children()[0].nextSibling),
-    phone_num_2 : wrap($(lis[3]).children()[0].nextSibling),
-    email       : wrap($(lis[4]).children(':first').next().html()),
-    alipay      : wrap($(lis[5]).children()[0].nextSibling)
+    shop_link   : url_wrap($(lis[0]).children(':first').next().html()),
+    contact     : text_wrap($(lis[1]).children()[0].nextSibling),
+    phone_num_1 : text_wrap($(lis[2]).children()[0].nextSibling),
+    phone_num_2 : text_wrap($(lis[3]).children()[0].nextSibling),
+    email       : $(lis[4]).children(':first').next().html(),
+    alipay      : text_wrap($(lis[5]).children()[0].nextSibling)
   };
   return info;
 }
@@ -104,8 +116,8 @@ function ExtractInfoFromUserPage(dom) {
 function SendInviteList(json) {
   // gen message
   var pageNum = parseInt($(".page-cur").html(), 10);
-  // var ack = pageNum >= 50 ? 'end' : 'ongoing';  // nocommit
-  var ack = IsCurrentLastPage() ? 'end' : 'ongoing';
+   var ack = pageNum >= 2 ? 'end' : 'ongoing';  // nocommit
+  //var ack = IsCurrentLastPage() ? 'end' : 'ongoing';
 
   var message = {
     type : "info", 
@@ -152,13 +164,13 @@ function PageRequestChain(json, items, step) {
   xhr.onload = function() {
     var text = xhr.responseText;
     var title = getTitle(text);
-    console.log('Response from CORS request to ' + url + ': ' + title);
     if (title != "供销平台") {
       console.log('ERROR: Page redirect to shop url, useless');
       return;
     }
     var dom = $.parseHTML(text);
     var additional_info = ExtractInfoFromUserPage(dom);
+    console.log('Response from CORS request to ' + url + ': ' + additional_info.contact);
     for (var attr in additional_info) {
       info[attr] = additional_info[attr]
     }
