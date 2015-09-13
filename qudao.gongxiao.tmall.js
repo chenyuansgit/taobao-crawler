@@ -1,11 +1,25 @@
+// Analyze each distributor link, and silently crawl data
+// from the distributor detail page.
+//
+// Automatically click next page, and exchange info with 
+// background page (background.js)
+//
+// When the pages are exhausted, the background script will
+// invoke a download request. To store invitation data.
+//
+// TODO:
+// 1. auth code 
+// 2. XHR fail to load with 200 stat
+//
+
 function DEBUG(msg) {
   console.log(msg);
 }
 
 function ShouldStop() {
-  var pageNum = parseInt($(".page-cur").html(), 10);
-  return pageNum >= 2;
-  //return IsCurrentLastPage();
+  //var pageNum = parseInt($(".page-cur").html(), 10);
+  //return pageNum >= 2;
+  return IsCurrentLastPage();
 }
 
 function GoPrevPage() {
@@ -25,6 +39,7 @@ function GoPage(num) {
 
 
 function IsCurrentLastPage() {
+  // sample: 
   // in page: 465
   //<a class="page-next" href="#" onclick="gotoPages.call(this,466);return false;" data-spm-anchor-id="a1z0g.47.0.0"><span>下一页</span></a>
   //
@@ -43,7 +58,7 @@ function IsAuthPage(url) {
   return regex.test(url);
 }
 
-// example of auth code
+// example pattern of auth code
 //
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
@@ -67,7 +82,7 @@ function CreateCORSRequest(method, url) {
 
 function FormatJSON(data) {
   return {
-      用户名   : data.username,
+      用户名   : data.distributor,
 //      淘宝链接 : data.tblink,
 //      旺旺图标 : data.tbicon,
       信用等级 : data.level,
@@ -88,11 +103,11 @@ function FormatJSON(data) {
 
 function ExtractInfoFromInviteList(dom) {
   var tds = $(dom).children();
-  var username = $(tds[0]).children(':first').html();
+  var distributor = $(tds[0]).children(':first').html();
   var tblink = 'https:' + $(tds[0]).children(':first').attr('href');
   var tbicon = $(tds[0]).children(':first').next().html();
   var info = {
-    username    : username,
+    distributor : distributor,
     tblink      : tblink,
     tbicon      : tbicon,
     level       : $(tds[1]).html(),
@@ -106,7 +121,7 @@ function ExtractInfoFromInviteList(dom) {
   return info;
 }
 
-function ExtractInfoFromUserPage(dom) {
+function ExtractInfoFromDistributorPage(dom) {
   var div = $('.distributor-detail', dom).first();
   var dd = $('dt:contains("其他信息")', div).next();
   var ul = $(dd).children(':first');
@@ -187,7 +202,7 @@ function PageRequestChain(json, items, step) {
     DEBUG('url=' + url + ' stat=' + xhr.readyState + ' status=' + xhr.status);
   }
 
-  var delay = 100 + Math.floor(Math.random() * 300);
+  var delay = 600 + Math.floor(Math.random() * 300);
 
   xhr.onload = function() {
     var url = xhr.responseURL;
@@ -198,7 +213,7 @@ function PageRequestChain(json, items, step) {
       return;
     }
     var dom = $.parseHTML(text);
-    var additional_info = ExtractInfoFromUserPage(dom);
+    var additional_info = ExtractInfoFromDistributorPage(dom);
     DEBUG('Response from CORS request to ' + url + ': ' + additional_info.contact);
     for (var attr in additional_info) {
       info[attr] = additional_info[attr];
@@ -217,7 +232,7 @@ function PageRequestChain(json, items, step) {
 }
 
 
-// background remembers last page, so that it is always safe to close the active page
+// Background remembers last page, so it is always safe to close this content page
 function DetermineStartPage() {
   var pageNum = parseInt($(".page-cur").html(), 10);
 

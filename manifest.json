@@ -15,14 +15,14 @@
       {
         "matches": ["*://login.taobao.com/*"],
         "js":      [
-          "autofill.js"
+          "login.taobao.js"
         ],
         "run_at":  "document_end"
       },
       {
         "matches": ["*://mai.taobao.com/*"],
         "js":      [
-          "autoredirect.js"
+          "mai.taobao.js"
         ],
         "run_at":  "document_start"
       },
@@ -31,7 +31,7 @@
         "js":      [
           "jquery/jquery-1.11.3.min.js",
           "util.js",
-          "autopaging.js"
+          "qudao.gongxiao.tmall.js"
         ],
         "run_at":  "document_end"
       }
