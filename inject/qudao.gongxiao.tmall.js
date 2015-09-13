@@ -13,13 +13,13 @@
 //
 
 function DEBUG(msg) {
-  console.log(msg);
+  console.log("[" + TimestampNoDate() + "] " + msg);
 }
 
 function ShouldStop() {
-  //var pageNum = parseInt($(".page-cur").html(), 10);
-  //return pageNum >= 2;
-  return IsCurrentLastPage();
+  var pageNum = parseInt($(".page-cur").html(), 10);
+  return pageNum >= 2;
+  //return IsCurrentLastPage();
 }
 
 function GoPrevPage() {
