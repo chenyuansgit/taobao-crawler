@@ -1,14 +1,14 @@
 {
     "manifest_version": 2,
-    "name":    "work",
-    "description": "download invitelist",
-    "version": "0.0",
+    "name":    "供销数据爬虫",
+    "description": "点击插件按钮即开始爬取，请勿关闭浏览器。遇到程序异常关掉其它页面，重点一次插件按钮即可",
+    "version": "1.0",
 
     "background": {
         "persistent": false,
         "scripts": [
           "include/util.js",
-          "inject/background.js"
+          "background.js"
         ]
     },
     "content_scripts": [
@@ -27,10 +27,11 @@
         "run_at":  "document_start"
       },
       {
-        "matches": ["*://alisec.tmall.com/*"],
+        "matches": ["*://gongxiao.tmall.com/*"],
         "js":      [
-          "inject/alisec.tmall.js"
-        ]
+          "inject/gongxiao.tmall.js"
+        ],
+        "run_at":  "document_start"
       },
       {
         "matches": ["*://qudao.gongxiao.tmall.com/*"],
@@ -43,7 +44,7 @@
       }
     ],
     "browser_action": {
-        "default_title": "Test Extension"
+        "default_title": "供销爬数据插件"
     },
 
     "permissions": [

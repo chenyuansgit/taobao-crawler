@@ -215,6 +215,15 @@ function PageRequestChain(json, items, step) {
   xhr.send();
 }
 
+/*
+// A simple hack so that we won't refresh those pages
+function BeautifyPage() {
+  $("tr.item td a").each(function() {
+    var _href = $(this).attr("href");
+    $(this).attr('href', _href + '&testonly');
+  });
+}
+*/
 
 // Background remembers last page, so it is always safe to close this content page
 function DetermineStartPage() {
