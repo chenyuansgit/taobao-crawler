@@ -1,7 +1,27 @@
+// Create the XHR object.
+function CreateCORSRequest(method, url) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    // XHR for Chrome/Firefox/Opera/Safari.
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    // XDomainRequest for IE.
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    // CORS not supported.
+    xhr = null;
+  }
+  return xhr;
+}
+
+// Dr.\nBoom will be:
+// Dr. Boom
 function RemoveLineBreak(str) {
   return str.replace(/(\r\n|\n|\r)/gm," ");
 }
 
+// Remove all line break junks from an object
 function DeepTrim(obj) {
   for (var prop in obj) {
     var value = obj[prop], type = typeof value;

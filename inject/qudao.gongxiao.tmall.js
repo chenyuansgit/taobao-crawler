@@ -63,22 +63,6 @@ function IsAuthPage(url) {
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
 
-// Create the XHR object.
-function CreateCORSRequest(method, url) {
-  var xhr = new XMLHttpRequest();
-  if ("withCredentials" in xhr) {
-    // XHR for Chrome/Firefox/Opera/Safari.
-    xhr.open(method, url, true);
-  } else if (typeof XDomainRequest != "undefined") {
-    // XDomainRequest for IE.
-    xhr = new XDomainRequest();
-    xhr.open(method, url);
-  } else {
-    // CORS not supported.
-    xhr = null;
-  }
-  return xhr;
-}
 
 function FormatJSON(data) {
   return {
@@ -208,8 +192,8 @@ function PageRequestChain(json, items, step) {
     var url = xhr.responseURL;
     var text = xhr.responseText;
     if (IsAuthPage(url)) {
-      window.open(url, '_blank');
-      alert("请先验证");
+      console.log("auth required, redirect to: " + url);
+      document.location.href = url;
       return;
     }
     var dom = $.parseHTML(text);

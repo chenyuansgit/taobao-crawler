@@ -7,31 +7,37 @@
     "background": {
         "persistent": false,
         "scripts": [
-          "util.js",
-          "background.js"
+          "include/util.js",
+          "inject/background.js"
         ]
     },
     "content_scripts": [
       {
         "matches": ["*://login.taobao.com/*"],
         "js":      [
-          "login.taobao.js"
+          "inject/login.taobao.js"
         ],
         "run_at":  "document_end"
       },
       {
         "matches": ["*://mai.taobao.com/*"],
         "js":      [
-          "mai.taobao.js"
+          "inject/mai.taobao.js"
         ],
         "run_at":  "document_start"
       },
       {
+        "matches": ["*://alisec.tmall.com/*"],
+        "js":      [
+          "inject/alisec.tmall.js"
+        ]
+      },
+      {
         "matches": ["*://qudao.gongxiao.tmall.com/*"],
         "js":      [
-          "jquery/jquery-1.11.3.min.js",
-          "util.js",
-          "qudao.gongxiao.tmall.js"
+          "include/jquery-1.11.3.min.js",
+          "include/util.js",
+          "inject/qudao.gongxiao.tmall.js"
         ],
         "run_at":  "document_end"
       }
