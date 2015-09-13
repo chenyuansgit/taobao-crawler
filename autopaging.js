@@ -4,8 +4,8 @@ function DEBUG(msg) {
 
 function ShouldStop() {
   var pageNum = parseInt($(".page-cur").html(), 10);
-  //return pageNum >= 2;
-  return IsCurrentLastPage();
+  return pageNum >= 2;
+  //return IsCurrentLastPage();
 }
 
 function GoPrevPage() {
@@ -49,7 +49,7 @@ function IsAuthPage(url) {
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
 
 // Create the XHR object.
-function createCORSRequest(method, url) {
+function CreateCORSRequest(method, url) {
   var xhr = new XMLHttpRequest();
   if ("withCredentials" in xhr) {
     // XHR for Chrome/Firefox/Opera/Safari.
@@ -177,7 +177,7 @@ function PageRequestChain(json, items, step) {
   }
 
   var url = info.tblink;
-  var xhr = createCORSRequest('GET', url);
+  var xhr = CreateCORSRequest('GET', url);
   if (!xhr) {
     DEBUG('CORS not supported');
     return;
@@ -217,7 +217,7 @@ function PageRequestChain(json, items, step) {
 }
 
 
-// background remembers last page, going to check
+// background remembers last page, so that it is always safe to close the active page
 function DetermineStartPage() {
   var pageNum = parseInt($(".page-cur").html(), 10);
 

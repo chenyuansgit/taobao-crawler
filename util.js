@@ -28,3 +28,7 @@ function JSON2CSV(json) {
   return csv;
 }
 
+function Object2ListText(obj) {
+  var arr = Object.keys(obj).map(function (key) {return key + ' ' + obj[key];} );
+  return arr.join('\r\n');
+}
