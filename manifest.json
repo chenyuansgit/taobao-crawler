@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name":    "供销数据爬虫",
-    "description": "点击插件按钮即开始爬取，请勿关闭浏览器。遇到程序异常关掉其它页面，重点一次插件按钮即可",
+    "description": "点击插件按钮即开始爬取，请勿关闭浏览器。遇到程序异常的话，关掉其它页面，再点一次插件按钮即可",
     "version": "1.0",
 
     "background": {
@@ -44,9 +44,12 @@
       }
     ],
     "browser_action": {
-        "default_title": "供销爬数据插件"
+        "default_title": "供销爬数据插件",
+        "default_icon": "resource/icon-6.ico"
     },
-
+    "icons": {
+      "128" : "resource/icon.png"
+    },
     "permissions": [
       "tabs",
       "activeTab",
