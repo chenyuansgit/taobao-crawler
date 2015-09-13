@@ -1,7 +1,7 @@
 optimization: add on/off button to auto-fetching, or manually disable it?
 
-optimization: add interface to show iconpage?
-
 optimization: add interface to show current stat?
+
+optimization: add interface to change speed?
 
 optimization: hide all pages and show only above interfaces? // the rendering page cannot be hidden?
