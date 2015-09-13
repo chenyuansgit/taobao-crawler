@@ -1,6 +1,28 @@
+function DEBUG(msg) {
+  console.log(msg);
+}
+
+function ShouldStop() {
+  var pageNum = parseInt($(".page-cur").html(), 10);
+  //return pageNum >= 2;
+  return IsCurrentLastPage();
+}
+
+function GoPrevPage() {
+  $(".page-prev")[0].click();
+}
+
 function GoNextPage() {
   $(".page-next")[0].click();
 }
+
+function GoPage(num) {
+  if (! (num === parseInt(num, 10))) return;
+  var js = 'gotoPages.call(this,'+ num +');return false;'
+  $(".page-next").attr('onclick', js);
+  $(".page-next")[0].click();
+}
+
 
 function IsCurrentLastPage() {
   // in page: 465
@@ -16,14 +38,15 @@ function IsDistributorDetailPage(url) {
   return regex.test(url);
 }
 
+function IsAuthPage(url) {
+  var regex = /alisec.tmall.com/;
+  return regex.test(url);
+}
+
 // example of auth code
 //
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
 // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
-
-function getTitle(text) {
-  return text.match('<title>(.*)?</title>')[1];
-}
 
 // Create the XHR object.
 function createCORSRequest(method, url) {
@@ -45,8 +68,8 @@ function createCORSRequest(method, url) {
 function FormatJSON(data) {
   return {
       用户名   : data.username,
-      淘宝链接 : data.tblink,
-      旺旺图标 : data.tbicon,
+//      淘宝链接 : data.tblink,
+//      旺旺图标 : data.tbicon,
       信用等级 : data.level,
       好评率   : data.rate,
       开店时间 : data.open_date,
@@ -114,10 +137,8 @@ function ExtractInfoFromUserPage(dom) {
 }
 
 function SendInviteList(json) {
-  // gen message
+  var ack = ShouldStop() ? 'end' : 'ongoing';
   var pageNum = parseInt($(".page-cur").html(), 10);
-   var ack = pageNum >= 2 ? 'end' : 'ongoing';  // nocommit
-  //var ack = IsCurrentLastPage() ? 'end' : 'ongoing';
 
   var message = {
     type : "info", 
@@ -129,20 +150,20 @@ function SendInviteList(json) {
   chrome.runtime.sendMessage(message, function(response) {
     if (response && response.ack) {
       if (response.ack == "got") {
-        console.log("check next page");
-        setTimeout(GoNextPage(), 3000);
+        DEBUG("check next page");
+        setTimeout(GoNextPage, 500 + Math.floor(Math.random() * 1000));
       } else if (response.ack == 'done') {
-        console.log("crawling done");
+        DEBUG("crawling done");
       }
     } else {
-      console.log("info response missing");
+      DEBUG("info response missing");
     }
   });
 }
 
 
 function PageRequestChain(json, items, step) {
-  console.log("chain on " + step);
+  DEBUG("chain on " + step);
   if (step == items.length) {
     DeepTrim(json);
     SendInviteList(json);
@@ -158,32 +179,66 @@ function PageRequestChain(json, items, step) {
   var url = info.tblink;
   var xhr = createCORSRequest('GET', url);
   if (!xhr) {
-    console.log('CORS not supported');
+    DEBUG('CORS not supported');
     return;
   }
+  xhr.onreadystatechange = function() {
+    var url = xhr.responseURL;
+    DEBUG('url=' + url + ' stat=' + xhr.readyState + ' status=' + xhr.status);
+  }
+
+  var delay = 100 + Math.floor(Math.random() * 300);
+
   xhr.onload = function() {
+    var url = xhr.responseURL;
     var text = xhr.responseText;
-    var title = getTitle(text);
-    if (title != "供销平台") {
-      console.log('ERROR: Page redirect to shop url, useless');
+    if (IsAuthPage(url)) {
+      window.open(url, '_blank');
+      alert("请先验证");
       return;
     }
     var dom = $.parseHTML(text);
     var additional_info = ExtractInfoFromUserPage(dom);
-    console.log('Response from CORS request to ' + url + ': ' + additional_info.contact);
+    DEBUG('Response from CORS request to ' + url + ': ' + additional_info.contact);
     for (var attr in additional_info) {
-      info[attr] = additional_info[attr]
+      info[attr] = additional_info[attr];
     }
     json.push(FormatJSON(info));
-    PageRequestChain(json, items, step + 1);
+    setTimeout(function(){PageRequestChain(json, items, step + 1)}, delay);
   };
 
   xhr.onerror = function() {
-    console.log('Woops, there was an error making the request.');
-    PageRequestChain(json, items, step + 1);
+    var url = xhr.responseURL;
+    DEBUG('Woops, there was an error making the request: ' + url);
+    setTimeout(function(){PageRequestChain(json, items, step + 1)}, delay);
   };
 
   xhr.send();
+}
+
+
+// background remembers last page, going to check
+function DetermineStartPage() {
+  var pageNum = parseInt($(".page-cur").html(), 10);
+
+  var message = {
+    type : "page", 
+    page : pageNum
+  };
+
+  chrome.runtime.sendMessage(message, function(response) {
+    if (response && response.page) {
+      var lastMissingPage = response.page;
+      DEBUG('on page=' + pageNum + ' lastMissing=' + lastMissingPage);
+      if (pageNum != lastMissingPage) {
+        GoPage(lastMissingPage);
+      } else {
+        var items = $("#J_InviteList").find('tbody').find('.item');
+        var json = [];
+        PageRequestChain(json, items, 0);
+      }
+    }
+  });
 }
 
 
@@ -191,16 +246,13 @@ function main() {
 
   var targetRegex = /qudao.gongxiao.tmall.com/;
   if (!targetRegex.test(document.location.href)) {
-    console.log("will redirect soon...");
+    DEBUG("will redirect soon...");
     return;
   }
   
-  console.log("recording...");
+  DEBUG("recording...");
 
-  var items = $("#J_InviteList").find('tbody').find('.item');
-  var json = [];
-
-  PageRequestChain(json, items, 0);
+  DetermineStartPage();
 }
 
 window.scrollTo(0,document.body.scrollHeight);  // for better view

@@ -4,4 +4,4 @@ optimization: add interface to show iconpage?
 
 optimization: add interface to show current stat?
 
-optimization: hide all pages and show only above interfaces?
+optimization: hide all pages and show only above interfaces? // the rendering page cannot be hidden?
