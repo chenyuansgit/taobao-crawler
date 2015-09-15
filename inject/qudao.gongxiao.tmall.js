@@ -59,21 +59,19 @@ function IsDistributorDetailPage(url) {
 }
 
 function IsAuthPage(url) {
+  // sample:
+  // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
+  // http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
   var regex = /alisec.tmall.com/;
   return regex.test(url);
 }
 
-// example pattern of auth code
-//
-// http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.76.SWpCIl&distributorId=10261192?
-// http://alisec.tmall.com/checkcodev3.php?v=4&ip=222.77.166.244&sign=b2a1c5babb9d1b849b1d5586696509f8&app=wagbridge&how=A1&http_referer=https://gongxiao.tmall.com//supplier/user/distributor_detail.htm?spm=a1z0g.47.1000518.61.SWpCIl&distributorId=10392544?
-
 
 function FormatJSON(data) {
   return {
-      用户名   : data.distributor,
-//      淘宝链接 : data.tblink,
-//      旺旺图标 : data.tbicon,
+      用户名   : data.username,
+      信息链接 : data.detail_link,
+      旺旺图标 : data.tbicon,
       信用等级 : data.level,
       好评率   : data.rate,
       开店时间 : data.open_date,
@@ -92,12 +90,12 @@ function FormatJSON(data) {
 
 function ExtractInfoFromInviteList(dom) {
   var tds = $(dom).children();
-  var distributor = $(tds[0]).children(':first').html();
-  var tblink = 'https:' + $(tds[0]).children(':first').attr('href');
+  var username = $(tds[0]).children(':first').html();
+  var detail_link = 'https:' + $(tds[0]).children(':first').attr('href');
   var tbicon = $(tds[0]).children(':first').next().html();
   var info = {
-    distributor : distributor,
-    tblink      : tblink,
+    username    : username,
+    detail_link : detail_link,
     tbicon      : tbicon,
     level       : $(tds[1]).html(),
     rate        : $(tds[2]).html(),
@@ -123,7 +121,7 @@ function ExtractInfoFromDistributorPage(dom) {
   };
   var url_wrap = function(elem) {
     if (elem != null && elem !== undefined) {
-      return 'https://' + elem;
+      return 'https://' + elem.trim();
     } else {
       return '';
     }
@@ -155,7 +153,7 @@ function SendInviteList(json) {
     if (response && response.ack) {
       if (response.ack == "got") {
         DEBUG("check next page");
-        setTimeout(GoNextPage, 500 + Math.floor(Math.random() * 1000));
+        setTimeout(GoNextPage, 300 + Math.floor(Math.random() * 300));
       } else if (response.ack == 'done') {
         DEBUG("crawling done");
       }
@@ -164,7 +162,6 @@ function SendInviteList(json) {
     }
   });
 }
-
 
 function PageRequestChain(json, items, step) {
   DEBUG("chain on " + step);
@@ -175,23 +172,24 @@ function PageRequestChain(json, items, step) {
   }
 
   var info = ExtractInfoFromInviteList(items[step]);
-  if (!IsDistributorDetailPage(info.tblink)) {
+  if (!IsDistributorDetailPage(info.detail_link)) {
     PageRequestChain(json, items, step + 1);
     return;
   }
 
-  var url = info.tblink;
+  var url = info.detail_link;
   var xhr = CreateCORSRequest('GET', url);
   if (!xhr) {
     DEBUG('CORS not supported');
     return;
   }
+  /*
   xhr.onreadystatechange = function() {
     var url = xhr.responseURL;
     DEBUG('url=' + url + ' stat=' + xhr.readyState + ' status=' + xhr.status);
   }
-
-  var delay = 200 + Math.floor(Math.random() * 300);
+  */
+  var delay = 200 + Math.floor(Math.random() * 200);
 
   xhr.onload = function() {
     var url = xhr.responseURL;
@@ -234,12 +232,14 @@ function DetermineStartPage() {
     if (response && response.page) {
       var lastMissingPage = response.page;
       DEBUG('on page=' + pageNum + ' lastMissing=' + lastMissingPage);
-      if (pageNum != lastMissingPage) {
-        GoPage(lastMissingPage);
-      } else {
+
+      if ( pageNum == lastMissingPage ||
+          (pageNum < lastMissingPage && IsCurrentLastPage())) {  // the list might be truncated when crawling
         var items = $("#J_InviteList").find('tbody').find('.item');
         var json = [];
         PageRequestChain(json, items, 0);
+      } else {
+        GoPage(lastMissingPage);  // might go ahead, might go back
       }
     }
   });

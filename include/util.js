@@ -38,12 +38,16 @@ function DeepTrim(obj) {
 
 function JSON2CSV(json) {
   var fields = Object.keys(json[0]);
+  var header = fields.map(function(col) {
+    return '"' + col + '"';
+  });
   var csv = json.map(function(row){
     return fields.map(function(fieldName){
-      return '"' + (row[fieldName] || '') + '"';
+      return '"' + (row[fieldName] || '') + '"';  // use heavy script to handle this quoting
+      //return (row[fieldName] || ''); // don't quote, otherwise hairy to import to server
     });
   });
-  csv.unshift(fields); // add header column
+  csv.unshift(header); // add header column
   csv = csv.join('\r\n');
   return csv;
 }
