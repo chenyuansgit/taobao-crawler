@@ -4,6 +4,7 @@
     "description": "点击插件按钮即开始爬取，请勿关闭浏览器。遇到程序异常的话，关掉其它页面，再点一次插件按钮即可",
     "version": "1.0",
 
+    "options_page": "options.html",
     "background": {
         "persistent": true,
         "scripts": [
@@ -56,6 +57,7 @@
       "downloads",
       "<all_urls>",
       "https://*/*",
-      "http://*/*"
+      "http://*/*",
+      "storage"
     ]
 }

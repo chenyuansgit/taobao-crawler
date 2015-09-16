@@ -36,6 +36,10 @@ function DeepTrim(obj) {
   }
 }
 
+function NaiveReverse(str) {
+  return str.split('').reverse().join('');
+}
+
 function JSON2CSV(json) {
   var fields = Object.keys(json[0]);
   var header = fields.map(function(col) {

@@ -67,27 +67,6 @@ function IsAuthPage(url) {
 }
 
 
-function FormatJSON(data) {
-  return {
-      用户名   : data.username,
-      信息链接 : data.detail_link,
-      旺旺图标 : data.tbicon,
-      信用等级 : data.level,
-      好评率   : data.rate,
-      开店时间 : data.open_date,
-      主营类目 : data.type,
-      邀请时间 : data.invite_date,
-      邀请模式 : data.invite_mode,
-      邀请状态 : data.invite_stat,
-      分销商店铺 : data.shop_link,
-      联系人     : data.contact,
-      电话号码   : data.phone_num_1,
-      手机号码   : data.phone_num_2,
-      电子邮件   : data.email,
-      支付宝帐号 : data.alipay
-  };
-}
-
 function ExtractInfoFromInviteList(dom) {
   var tds = $(dom).children();
   var username = $(tds[0]).children(':first').html();
@@ -205,7 +184,7 @@ function PageRequestChain(json, items, step) {
     for (var attr in additional_info) {
       info[attr] = additional_info[attr];
     }
-    json.push(FormatJSON(info));
+    json.push(info);
     setTimeout(function(){PageRequestChain(json, items, step + 1)}, delay);
   };
 

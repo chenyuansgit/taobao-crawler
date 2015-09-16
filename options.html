@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv=Content-Type content="text/html;charset=utf-8">
+<title>插件设置</title>
+</head>
+<body>
+
+<br>
+<hr align='left' width='400px'>
+<br>
+<br>
+
+<table border=0>
+<tr>
+<td>爬取帐户名: </td>
+<td><input type="text" id="username"></td>
+<td style='color:gray'> ( 将用该帐户自动登录分销页面 ) </td>
+</tr>
+<tr>
+<td>密码:     </td>
+<td><input type="password" id="password"></td>
+<td><input type="checkbox" id="showpass">显示密码</td>
+</tr>
+</table>
+
+<br>
+
+<button id="save">保存</button>
+<button id="restore">重置</button>
+<br>
+<br>
+<div id="savestatus" style='color:red'></div>
+<br>
+<hr align='left' width='400px'>
+<br>
+<br>
+
+<button id="clearqueue">清空缓存</button>
+<span style='color:gray'> ( 下次将不考虑历史记录爬取所有数据 ) </span>
+<br>
+<br>
+<div id="clearstatus" style='color:red'></div>
+
+<br>
+<hr align='left' width='400px'>
+<br>
+<br>
+
+
+<script src="include/jquery-1.11.3.min.js"></script>
+<script src="options.js"></script>
+</body>
+</html>
+
