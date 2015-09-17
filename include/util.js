@@ -40,6 +40,10 @@ function NaiveReverse(str) {
   return str.split('').reverse().join('');
 }
 
+function StringBytes(str) {
+  return encodeURI(str).split(/%..|./).length - 1;
+}
+
 function JSON2CSV(json) {
   var fields = Object.keys(json[0]);
   var header = fields.map(function(col) {

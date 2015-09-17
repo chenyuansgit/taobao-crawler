@@ -8,6 +8,7 @@
     "background": {
         "persistent": true,
         "scripts": [
+          "include/JSONC-1.6.1.js",
           "include/util.js",
           "background.js"
         ]
