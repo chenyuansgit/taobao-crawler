@@ -38,7 +38,7 @@ function show_password() {
 
 function clear_queue() {
   chrome.storage.sync.set({
-    dataqueue: []
+    datacache: []
   }, function() {
     $('#clearstatus').html('已清空');
     setTimeout(function() {

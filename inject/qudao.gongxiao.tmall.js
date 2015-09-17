@@ -17,11 +17,17 @@ function DEBUG(msg) {
 }
 
 function ShouldStop() {
-  var pageNum = parseInt($(".page-cur").html(), 10);
-  return pageNum >= 2;
-  //return IsCurrentLastPage();
+  //return PageNum() >= 3;
+  return IsCurrentLastPage();
 }
 
+function PageNum() {
+  return parseInt($(".page-cur").html(), 10);
+}
+
+
+// NOTE: 'Go' functions are not immediately, and should
+// be considered as asynchronymous functions...
 function GoPrevPage() {
   $(".page-prev")[0].click();
 }
@@ -119,7 +125,7 @@ function ExtractInfoFromDistributorPage(dom) {
 
 function SendInviteList(json) {
   var ack = ShouldStop() ? 'end' : 'ongoing';
-  var pageNum = parseInt($(".page-cur").html(), 10);
+  var pageNum = PageNum();
 
   var message = {
     type : "info", 
@@ -200,7 +206,7 @@ function PageRequestChain(json, items, step) {
 // Background remembers last page, so it is always safe to close 
 // this content page
 function DetermineStartPage() {
-  var pageNum = parseInt($(".page-cur").html(), 10);
+  var pageNum = PageNum();
 
   var message = {
     type : "page", 
@@ -230,6 +236,7 @@ function main() {
     DEBUG("will redirect soon...");
     return;
   }
+//  if (PageNum() == 1) {GoPage(3); return;}  // debug only
   DEBUG("recording...");
   window.scrollTo(0,document.body.scrollHeight);  // to see pageNo.
   DetermineStartPage();
